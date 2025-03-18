@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Проверка наличия переменной окружения DB_URL
-db_url = os.getenv("DB_LITE")
+db_url = os.getenv("DB_URL")
 if not db_url:
     raise ValueError("Переменная окружения DB_URL не установлена или пуста.")
 
@@ -15,7 +15,9 @@ if not db_url:
 engine = create_async_engine(db_url, echo=True)
 
 # Настройка session_maker для асинхронных сессий
-session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+session_maker = async_sessionmaker(
+    bind=engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 # Асинхронная функция для создания базы данных
