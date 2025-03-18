@@ -9,7 +9,7 @@ from setings import dp, bot
 
 
 bot.my_admins_list = []
-dp.include_routers(router_user_handler, router_admin_handler)
+dp.include_routers(router_admin_handler, router_user_handler)
 
 
 async def on_startup(bot):
