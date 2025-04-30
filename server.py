@@ -21,7 +21,9 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    await start_bot()
+    print("🚀 FastAPI стартует")
+    asyncio.create_task(start_bot())
+    print("🤖 Бот запущен в фоне")
 
 @app.get("/api/ping")
 async def ping():
