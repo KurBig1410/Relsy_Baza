@@ -1,5 +1,14 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Date, String, JSON, Integer, Time, BigInteger, Text  # noqa: F401
+from sqlalchemy import (
+    Date,
+    String,
+    JSON,
+    Integer,
+    Time,
+    BigInteger,
+    Text,
+    Column,
+)  # noqa: F401
 
 
 class Base(DeclarativeBase):
@@ -20,7 +29,9 @@ class User(Base):
 
 class File(Base):
     __tablename__ = "files"
-    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True, nullable=True)
+    id: Mapped[int] = mapped_column(
+        Integer, autoincrement=True, primary_key=True, nullable=True
+    )
     name: Mapped[str] = mapped_column(String(150), nullable=True)
     download_path: Mapped[str] = mapped_column(Text, nullable=True)
     img: Mapped[str] = mapped_column(Text, nullable=True)
@@ -28,7 +39,15 @@ class File(Base):
 
 class Folder(Base):
     __tablename__ = "folders"
-    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True, nullable=True)
+    id: Mapped[int] = mapped_column(
+        Integer, autoincrement=True, primary_key=True, nullable=True)
     name: Mapped[str] = mapped_column(String(150), nullable=True)
     path: Mapped[str] = mapped_column(Text, nullable=True)
     img: Mapped[str] = mapped_column(Text, nullable=True)
+
+
+class FAQ(Base):
+    __tablename__ = "faq"
+    id = Column(String(3), primary_key=True)  # формат '001', '002', ...
+    question = Column(String, nullable=False)
+    answer = Column(String, nullable=False)

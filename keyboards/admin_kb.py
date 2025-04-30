@@ -18,6 +18,11 @@ admin_kb = ReplyKeyboardMarkup(
             KeyboardButton(text="Добавить администратора"),
             KeyboardButton(text="Очистить базу администраторов"),
         ],
+        [
+            KeyboardButton(text="Список вопросов"),
+            KeyboardButton(text="Добавить вопрос в FAQ"),
+            KeyboardButton(text="Очистить базу вопросов"),
+        ],
     ],
     resize_keyboard=True,
     input_field_placeholder="Что вас интересует?",
@@ -29,7 +34,7 @@ del_kb = ReplyKeyboardRemove()
 admin_kb_cansel = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Назад"),
+            # KeyboardButton(text="Назад"),
             KeyboardButton(text="Отмена"),
         ],
     ],

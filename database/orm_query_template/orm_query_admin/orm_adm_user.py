@@ -10,6 +10,7 @@ async def orm_add_users(session: AsyncSession, data: dict):
     await session.commit()
 
 
+# Изменение пользователя
 async def orm_change_user(session: AsyncSession, us_id, data: dict):
     user_name = data["name"]
     query = update(User).where(User.id == int(us_id)).values(name=user_name)
@@ -40,14 +41,14 @@ async def orm_delete_users_by_id(session: AsyncSession, us_id):
     return result.rowcount
 
 
-# Получение списка участников
+# Получение списка пользователей
 async def orm_get_users(session: AsyncSession):
     query = select(User)
     result = await session.execute(query)
     return result.scalars().all()
 
 
-# Удаление таблицы с участниками
+# Удаление таблицы с пользователями
 async def orm_delete_users(session: AsyncSession):
     query = delete(User)
     result = await session.execute(query)

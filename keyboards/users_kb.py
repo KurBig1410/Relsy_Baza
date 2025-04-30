@@ -3,8 +3,10 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Поиск файлов в Яндекс диске"),
-            KeyboardButton(text="Поиск папок в Яндекс диске")
+            # KeyboardButton(text="Поиск файлов в Яндекс диске"),
+            # KeyboardButton(text="Поиск папок в Яндекс диске"),
+            KeyboardButton(text="Часто задаваемые вопросы"),
+            KeyboardButton(text="Рейтинг сети студий"),
         ]
     ],
     resize_keyboard=True,

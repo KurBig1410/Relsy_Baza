@@ -3,29 +3,16 @@ from aiogram import F
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards.admin_kb import admin_kb, admin_kb_cansel
-from database.orm_query_template.orm_query_admin import (
-    orm_delete_admins_by_id,
-    orm_add_admin,
-)
-from database.orm_query_template.orm_query_user import orm_add_users
+from database.orm_query import orm_add_question, orm_add_admin, orm_add_users
 
 
 router_admin_FSM = Router()
-
-
-@router_admin_FSM.callback_query(F.data.startswith("delete-admin"))
-async def delete_reminder(callback: CallbackQuery, session: AsyncSession):
-    reminder_id = callback.data.split("_")[-1]
-    # message_id = callback.data.split("_")[1]
-    await orm_delete_admins_by_id(session=session, rem_id=reminder_id)
-    await callback.message.delete()
-    await callback.message.answer("Администратор удален!")
 
 
 # Добавление администратора
@@ -149,6 +136,56 @@ async def save_users(message: Message, state: FSMContext, session: AsyncSession)
         await orm_add_users(session=session, data=data)
         await state.clear()
         await message.answer("Пользователь успешно добавлен!", reply_markup=admin_kb)
+    except Exception as e:
+        await message.answer(f"Ошибка {str(e)}", reply_markup=admin_kb)
+        await state.clear()
+
+
+class AddQuestion(StatesGroup):
+    id = State()
+    question = State()
+    answer = State()
+
+
+@router_admin_FSM.message(F.text == "Добавить вопрос в FAQ")
+async def add_шв(message: Message, state: FSMContext):
+    await message.answer("Введи id", reply_markup=admin_kb_cansel)
+    await state.set_state(AddQuestion.id)
+
+
+@router_admin_FSM.message(StateFilter(AddQuestion), Command("Отмена"))
+@router_admin_FSM.message(StateFilter(AddQuestion), F.text == "Отмена")
+async def cancel_faq(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.clear()
+    await message.answer("Действие отменено", reply_markup=admin_kb)
+
+
+@router_admin_FSM.message(AddQuestion.id, F.text)
+async def add_question(message: Message, state: FSMContext):
+    await state.update_data(id=message.text)
+    await message.answer("Введи вопрос", reply_markup=admin_kb_cansel)
+    await state.set_state(AddQuestion.question)
+
+
+@router_admin_FSM.message(AddQuestion.question, F.text)
+async def add_answer(message: Message, state: FSMContext):
+    await state.update_data(question=message.text)
+    await message.answer("Введи ответ", reply_markup=admin_kb_cansel)
+    await state.set_state(AddQuestion.answer)
+
+
+@router_admin_FSM.message(AddQuestion.answer, F.text)
+async def add_FAQ_save(message: Message, state: FSMContext, session: AsyncSession):
+    await state.update_data(answer=message.text)
+    data = await state.get_data()
+    try:
+        await orm_add_question(session=session, data=data)
+        # await message.answer(f"{data}")
+        await message.answer("Ок, вопрос и ответ добавлены", reply_markup=admin_kb)
+        await state.clear()
     except Exception as e:
         await message.answer(f"Ошибка {str(e)}", reply_markup=admin_kb)
         await state.clear()

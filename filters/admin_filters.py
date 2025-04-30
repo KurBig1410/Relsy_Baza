@@ -1,8 +1,7 @@
 from aiogram.filters import Filter
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.orm_query_template.orm_query_admin import orm_get_admins_by_id
-from database.orm_query_template.orm_query_user import orm_get_users_by_id
+from database.orm_query import orm_get_admins_by_id, orm_get_users_by_id
 
 
 class IsAdmin(Filter):

@@ -1,14 +1,11 @@
-from database.models import AdminList, File, Folder
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, func, text  # noqa: F401
+from sqlalchemy import select, update, delete
+from database.models import AdminList
 
 
 # Добавление админа
 async def orm_add_admin(session: AsyncSession, data: dict):
-    obj = AdminList(
-        name=data["name"],
-        id=data["admin_id"]
-    )
+    obj = AdminList(name=data["name"], id=data["admin_id"])
     session.add(obj)
     await session.commit()
 
@@ -22,11 +19,7 @@ async def orm_change_admin(session: AsyncSession, adm_id, data: dict):
         return 0  # Возвращаем 0, если запись не найдена
     # Дальше выполняем обновление, если запись существует
     admin_name = data["name"]
-    query = (
-        update(AdminList)
-        .where(AdminList.id == int(adm_id))
-        .values(name=admin_name)
-    )
+    query = update(AdminList).where(AdminList.id == int(adm_id)).values(name=admin_name)
     result = await session.execute(query)
     affected_rows = result.rowcount
     print(f"Количество обновлённых строк: {affected_rows}")
@@ -44,10 +37,13 @@ async def orm_delete_admins_by_id(session: AsyncSession, rem_id):
 
 # Получение админа по id и имени
 async def orm_get_admins_by_id_and_name(admin_id, admin_name, session: AsyncSession):
-    query = select(AdminList).where(AdminList.id == admin_id,AdminList.name == admin_name)
+    query = select(AdminList).where(
+        AdminList.id == admin_id, AdminList.name == admin_name
+    )
     print(f"Есть софпадение \nИмя:{admin_name}\nID{admin_id}")
     result = await session.execute(query)
     return result.scalars().all()
+
 
 # Получение админа по id
 async def orm_get_admins_by_id(admin_id, session: AsyncSession):
@@ -55,11 +51,13 @@ async def orm_get_admins_by_id(admin_id, session: AsyncSession):
     result = await session.execute(query)
     return result.scalars().all()
 
+
 # Получение списка администраторов
 async def orm_get_admins(session: AsyncSession):
     query = select(AdminList)
     result = await session.execute(query)
     return result.scalars().all()
+
 
 # Удаление таблицы с админами
 async def orm_delete_admins(session: AsyncSession):
@@ -67,16 +65,3 @@ async def orm_delete_admins(session: AsyncSession):
     result = await session.execute(query)
     await session.commit()
     return result.rowcount
-
-
-# Удаление таблицы с файлами и папками
-async def orm_delete_file_and_folders(session: AsyncSession):
-    # Удаляем файлы
-    result_file = await session.execute(delete(File))
-    # Удаляем папки
-    result_folder = await session.execute(delete(Folder))
-    # Сохраняем изменения
-    await session.commit()
-    
-    # Возвращаем общее количество удаленных строк
-    return result_file.rowcount + result_folder.rowcount
