@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from run_pipeline import run_pipeline
 from yandex_disk import scan_and_notify
 from database.engine import drop_db
 
@@ -23,8 +24,7 @@ from database.orm_query import (
     orm_delete_users,
     orm_delete_admins_by_id,
     orm_get_question,
-    orm_delete_faqs_by_id
-
+    orm_delete_faqs_by_id,
 )
 
 import asyncio
@@ -81,14 +81,16 @@ async def get_admins(message: Message, session: AsyncSession):
         )
 
 
+
+
+
+
 @router_admin_handler.message(F.text == "Обновить статистику")
 async def run_yc_data(message: Message, session: AsyncSession):
     try:
         command = ["xvfb-run", "-a", "python3", "run.py"]
         process = await asyncio.create_subprocess_exec(
-            *command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
         stdout, stderr = await process.communicate()
 
@@ -98,13 +100,23 @@ async def run_yc_data(message: Message, session: AsyncSession):
         if process.returncode == 0:
             await message.answer(f'✅ Успешно:\n{stdout_decoded or "(нет вывода)"}')
         else:
-            await message.answer(f'❌ Ошибка выполнения run.py:\n{stderr_decoded or stdout_decoded}')
+            await message.answer(
+                f"❌ Ошибка выполнения run.py:\n{stderr_decoded or stdout_decoded}"
+            )
             print(f"[stderr]:\n{stderr_decoded}")
             print(f"[stdout]:\n{stdout_decoded}")
 
     except Exception as e:
-        await message.answer(f'💥 Критическая ошибка:\n{e}')
+        await message.answer(f"💥 Критическая ошибка:\n{e}")
         print(f"[exception]: {e}")
+    try:
+        await run_pipeline()
+    except Exception as e:
+        await message.answer(f"💥 Критическая ошибка:\n{e}")
+        print(f"[exception]: {e}")
+
+
+
 
 
 

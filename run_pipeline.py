@@ -3,9 +3,9 @@ import re
 import asyncio
 import pandas as pd
 from bs4 import BeautifulSoup
-from data_base.engine import session_maker
-from data_base.filial import Filial
-from data_base.crud.filial_crud import create_filial, get_filial_by_name
+from database.engine import session_maker
+from database.filial import Filial
+from database.crud.filial_crud import create_filial, get_filial_by_name
 # from run import authorize_user, fetch_statistics_json
 
 
@@ -101,5 +101,5 @@ async def run_pipeline():
     await parse_and_store()
 
 
-if __name__ == "__main__":
-    asyncio.run(run_pipeline())
+# if __name__ == "__main__":
+#     asyncio.run(run_pipeline())
