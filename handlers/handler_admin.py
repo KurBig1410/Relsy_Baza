@@ -81,7 +81,6 @@ async def get_admins(message: Message, session: AsyncSession):
         )
 
 
-# Выводит список админов
 @router_admin_handler.message(F.text == "Обновить статистику")
 async def run_yc_data(message: Message, session: AsyncSession):
     try:
@@ -93,15 +92,19 @@ async def run_yc_data(message: Message, session: AsyncSession):
         )
         stdout, stderr = await process.communicate()
 
+        stdout_decoded = stdout.decode().strip()
+        stderr_decoded = stderr.decode().strip()
+
         if process.returncode == 0:
-            await message.answer(f'"output": {stdout.decode()}')
-            return {"status": "success", "output": stdout.decode()}
+            await message.answer(f'✅ Успешно:\n{stdout_decoded or "(нет вывода)"}')
         else:
-            print(f'Ошибка:\n{stdout.decode()}')
-            # raise HTTPException(status_code=500, detail=stderr.decode())
+            await message.answer(f'❌ Ошибка выполнения run.py:\n{stderr_decoded or stdout_decoded}')
+            print(f"[stderr]:\n{stderr_decoded}")
+            print(f"[stdout]:\n{stdout_decoded}")
+
     except Exception as e:
-        await message.answer(f'Ошибка:\n{e}')
-        print(f'Ошибка:\n{e}')
+        await message.answer(f'💥 Критическая ошибка:\n{e}')
+        print(f"[exception]: {e}")
 
 
 
