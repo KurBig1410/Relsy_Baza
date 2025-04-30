@@ -155,5 +155,5 @@ def run_pipeline():
     print(f'Дата окончания{date_from}')
 
 
-# if __name__ == "__main__":
-#     run_pipeline()
+if __name__ == "__main__":
+    run_pipeline()
