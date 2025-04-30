@@ -1,8 +1,8 @@
 # crud/filial_crud.py
 from sqlmodel import select, delete
-from data_base.filial import Filial
+from database.filial import Filial
 
-from data_base.engine import session_maker
+from database.engine import session_maker
 
 async_session = session_maker
 
