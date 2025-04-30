@@ -32,14 +32,20 @@ async def main():
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
-
-
 async def start_bot():
     logging.basicConfig(level=logging.INFO)
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Exit")
+    dp.startup.register(on_startup)
+    dp.shutdown.register(on_shutdown)
+    dp.update.middleware(DataBaseSession(session_pool=session_maker))
+    await create_db()
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+
+# async def start_bot():
+#     logging.basicConfig(level=logging.INFO)
+#     try:
+#         asyncio.run(main())
+#     except KeyboardInterrupt:
+#         print("Exit")
 
         
 # if __name__ == "__main__":
