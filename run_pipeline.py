@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from database.engine import session_maker
 from database.filial import Filial
 from database.crud.filial_crud import create_filial, get_filial_by_name
+
 # from run import authorize_user, fetch_statistics_json
 
 
@@ -57,15 +58,9 @@ async def parse_and_store():
             repeat_clients=int(clean_float(filial_data.get("Повторных клиентов")) or 0),
             lost_clients=int(clean_float(filial_data.get("Потерянных клиентов")) or 0),
             total_appointments=int(clean_float(filial_data.get("Всего записей")) or 0),
-            canceled_appointments=int(
-                clean_float(filial_data.get("Отменённых записей")) or 0
-            ),
-            finished_appointments=int(
-                clean_float(filial_data.get("Завершённых записей")) or 0
-            ),
-            unfinished_appointments=int(
-                clean_float(filial_data.get("Незавершённых записей")) or 0
-            ),
+            canceled_appointments=int(clean_float(filial_data.get("Отменённых записей")) or 0),
+            finished_appointments=int(clean_float(filial_data.get("Завершённых записей")) or 0),
+            unfinished_appointments=int(clean_float(filial_data.get("Незавершённых записей")) or 0),
             owner=None,
             population_category=None,
         )
@@ -73,7 +68,7 @@ async def parse_and_store():
         async with async_session() as session:
             async with session.begin():
                 existing = await get_filial_by_name(session, filial.name)
-        
+
                 if existing:
                     # обновляем поля вручную
                     existing.income = filial.income
@@ -89,7 +84,7 @@ async def parse_and_store():
                     existing.canceled_appointments = filial.canceled_appointments
                     existing.finished_appointments = filial.finished_appointments
                     existing.unfinished_appointments = filial.unfinished_appointments
-                    existing.population_category = filial.population_category
+                    # existing.population_category = filial.population_category
                     existing.owner = filial.owner
                 else:
                     session.add(filial)
