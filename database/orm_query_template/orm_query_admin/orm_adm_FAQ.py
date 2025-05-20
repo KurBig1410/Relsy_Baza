@@ -27,7 +27,7 @@ async def orm_get_question_by_id(question_id, session: AsyncSession):
 
 
 # Удаление таблицы с вопросами
-async def orm_delete_admins(session: AsyncSession):
+async def orm_delete_faqs(session: AsyncSession):
     query = delete(FAQ)
     result = await session.execute(query)
     await session.commit()

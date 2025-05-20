@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_delete_faqs
 from run_pipeline import run_pipeline
 from yandex_disk import scan_and_notify
 from database.engine import drop_db
@@ -169,6 +170,15 @@ async def delete_admins(message: Message, session: AsyncSession):
     except Exception as e:
         await message.answer(f"Ошибка: {e}", reply_markup=admin_kb)
 
+
+# Удаление базы вопросв
+@router_admin_handler.message(F.text == "Очистить базу вопросов")
+async def delete_faqs_table(message: Message, session: AsyncSession):
+    await orm_delete_faqs(session=session)
+    try:
+        await message.answer("База удалена")
+    except Exception as e:
+        await message.answer(f"Ошибка: {e}", reply_markup=admin_kb)
 
 @router_admin_handler.message(F.text == "Сканирование ЯндексДиска")
 async def search_files(message: Message, session: AsyncSession):

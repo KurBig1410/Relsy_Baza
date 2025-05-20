@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State # noqa: F401
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext  # noqa: F401
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery # noqa: F401
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery, WebAppInfo # noqa: F401
 from FSM_states.user_FSM import router_user_FSM
 from aiogram.filters import Command
 from keyboards.users_kb import start_kb
@@ -25,10 +25,26 @@ async def cmd_start(message: Message):
     await message.answer(welcome_text, reply_markup=start_kb)
 
 @router_user_handler.message(F.text == "Рейтинг сети студий")
-async def cmd_static(message: Message):
-    welcome_text = "https://kurbig1410.github.io/filial-stats-vue/"
-    await message.answer(welcome_text)
+# async def cmd_static(message: Message):
+#     welcome_text = "https://kurbig1410.github.io/filial-stats-vue/"
+#     await message.answer(welcome_text)
 
+
+async def send_stats(message: Message):
+    kb = InlineKeyboardMarkup(
+        row_width=1,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="📊 Открыть статистику", 
+                    web_app=WebAppInfo(url="https://kurbig1410.github.io/filial-stats-vue/")
+                )
+            ]
+        ],
+    )
+    await message.answer(
+        "Нажми кнопку ниже, чтобы открыть статистику:", reply_markup=kb
+    )
 
 
 
