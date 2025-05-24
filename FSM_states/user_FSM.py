@@ -6,6 +6,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm_query import orm_get_file_by_name, orm_get_folder_by_name
+from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_get_question
+from keyboards.inline import get_callback_btns
 
 
 router_user_FSM = Router()
@@ -93,3 +95,31 @@ async def get_name_folders(message: Message, state: FSMContext, session: AsyncSe
             f"Папка с таким названием не найдена на Яндекс.Диске.\nОшибка: {e}"
         )
     await state.clear()
+
+
+# Машина состояний для поиска файлов
+class FAQ(StatesGroup):
+    department = State()
+    category = State()
+    name = State()
+
+
+
+@router_user_FSM.message(F.text == "Часто задаваемые вопросы")
+async def faq_start(message: Message, state: FSMContext, session: AsyncSession):
+    await message.answer("Выбери отдел")
+    await state.set_state(FAQ.department)
+
+
+@router_user_FSM.message(F.text == "Часто задаваемые вопросы")
+async def show_faq(message: Message, session: AsyncSession):
+    faq_list = await orm_get_question(session=session)
+    for faq in faq_list:
+        await message.answer(
+            text=f"❓ {faq.question}",
+            reply_markup=get_callback_btns(
+                btns={
+                    "Ответ": f"answer_{faq.id}"  # Лучше передавать ID, не сам ответ
+                }
+            ),
+        )

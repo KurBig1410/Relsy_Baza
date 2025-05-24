@@ -6,8 +6,8 @@ from FSM_states.user_FSM import router_user_FSM
 from aiogram.filters import Command
 from keyboards.users_kb import start_kb
 from filters.admin_filters import IsUser # noqa: F401
-from keyboards.inline import get_callback_btns
-from database.orm_query import orm_get_question
+# from keyboards.inline import get_callback_btns
+# from database.orm_query import orm_get_question
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database.models import FAQ
@@ -48,18 +48,18 @@ async def send_stats(message: Message):
 
 
 
-@router_user_handler.message(F.text == "Часто задаваемые вопросы")
-async def show_faq(message: Message, session: AsyncSession):
-    faq_list = await orm_get_question(session=session)
-    for faq in faq_list:
-        await message.answer(
-            text=f"❓ {faq.question}",
-            reply_markup=get_callback_btns(
-                btns={
-                    "Ответ": f"answer_{faq.id}"  # Лучше передавать ID, не сам ответ
-                }
-            ),
-        )
+# @router_user_handler.message(F.text == "Часто задаваемые вопросы")
+# async def show_faq(message: Message, session: AsyncSession):
+#     faq_list = await orm_get_question(session=session)
+#     for faq in faq_list:
+#         await message.answer(
+#             text=f"❓ {faq.question}",
+#             reply_markup=get_callback_btns(
+#                 btns={
+#                     "Ответ": f"answer_{faq.id}"  # Лучше передавать ID, не сам ответ
+#                 }
+#             ),
+#         )
 
 
 

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from middlewares.db import DataBaseSession
 from database.engine import create_db, drop_db, session_maker

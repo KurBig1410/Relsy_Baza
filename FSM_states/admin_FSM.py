@@ -143,12 +143,14 @@ async def save_users(message: Message, state: FSMContext, session: AsyncSession)
 
 class AddQuestion(StatesGroup):
     id = State()
+    department = State()
+    category = State()
     question = State()
     answer = State()
 
 
 @router_admin_FSM.message(F.text == "Добавить вопрос в FAQ")
-async def add_шв(message: Message, state: FSMContext):
+async def add_id(message: Message, state: FSMContext):
     await message.answer("Введи id", reply_markup=admin_kb_cansel)
     await state.set_state(AddQuestion.id)
 
@@ -164,8 +166,22 @@ async def cancel_faq(message: Message, state: FSMContext) -> None:
 
 
 @router_admin_FSM.message(AddQuestion.id, F.text)
-async def add_question(message: Message, state: FSMContext):
+async def add_departament(message: Message, state: FSMContext):
     await state.update_data(id=message.text)
+    await message.answer("Введи отдел", reply_markup=admin_kb_cansel)
+    await state.set_state(AddQuestion.department)
+
+
+@router_admin_FSM.message(AddQuestion.department, F.text)
+async def add_category(message: Message, state: FSMContext):
+    await state.update_data(departament=message.text)
+    await message.answer("Введи категорию", reply_markup=admin_kb_cansel)
+    await state.set_state(AddQuestion.category)
+
+
+@router_admin_FSM.message(AddQuestion.category, F.text)
+async def add_question(message: Message, state: FSMContext):
+    await state.update_data(category=message.text)
     await message.answer("Введи вопрос", reply_markup=admin_kb_cansel)
     await state.set_state(AddQuestion.question)
 
@@ -183,7 +199,7 @@ async def add_FAQ_save(message: Message, state: FSMContext, session: AsyncSessio
     data = await state.get_data()
     try:
         await orm_add_question(session=session, data=data)
-        # await message.answer(f"{data}")
+        await message.answer(f"{data}")
         await message.answer("Ок, вопрос и ответ добавлены", reply_markup=admin_kb)
         await state.clear()
     except Exception as e:

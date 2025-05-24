@@ -1,10 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import (
-    Date,
     String,
-    JSON,
     Integer,
-    Time,
     BigInteger,
     Text,
     Column,
@@ -51,3 +48,5 @@ class FAQ(Base):
     id = Column(String(3), primary_key=True)  # формат '001', '002', ...
     question = Column(String, nullable=False)
     answer = Column(String, nullable=False)
+    department = Column(String, nullable=False) # отдел
+    category = Column(String, nullable=False) # категория
