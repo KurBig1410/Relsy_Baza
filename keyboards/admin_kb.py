@@ -2,12 +2,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 
 admin_kb = ReplyKeyboardMarkup(
     keyboard=[
-        [
-            KeyboardButton(text="Поиск файлов в Яндекс диске"),
-            KeyboardButton(text="Поиск папок в Яндекс диске"),
-            KeyboardButton(text="Сканирование ЯндексДиска"),
-            KeyboardButton(text="Сбросить базу"),
-        ],
+        # [
+        #     KeyboardButton(text="Поиск файлов в Яндекс диске"),
+        #     KeyboardButton(text="Поиск папок в Яндекс диске"),
+        #     KeyboardButton(text="Сканирование ЯндексДиска"),
+        #     KeyboardButton(text="Сбросить базу"),
+        # ],
         [
             KeyboardButton(text="Список пользователей"),
             KeyboardButton(text="Добавить пользователей"),

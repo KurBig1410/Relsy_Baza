@@ -3,11 +3,15 @@ from sqlalchemy import select, delete
 from database.models import FAQ
 
 
-
-
 # Добавление вопросов в FAQ
 async def orm_add_question(session: AsyncSession, data: dict):
-    obj = FAQ(id=data["id"], question=data["question"], answer=data["answer"])
+    obj = FAQ(
+        id=data["id"],
+        question=data["question"],
+        answer=data["answer"],
+        category=data["category"],
+        departament=data["category"],
+    )
     session.add(obj)
     await session.commit()
 
