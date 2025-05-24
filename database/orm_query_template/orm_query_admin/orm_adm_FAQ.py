@@ -37,7 +37,7 @@ async def orm_get_question_by_department(department, session: AsyncSession):
     return result.scalars().all()
 
 
-# Получение вопроса по отделу
+# Получение вопроса по категории
 async def orm_get_question_by_category(category, session: AsyncSession):
     query = select(FAQ).where(FAQ.category == category)
     result = await session.execute(query)

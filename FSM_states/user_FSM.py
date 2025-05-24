@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery, ReplyKeyboardMarkup
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,8 +12,8 @@ from keyboards.users_kb import department_kb
 
 
 router_user_FSM = Router()
-
-
+user_answers = {}  # user_id: message_id
+del_kb = ReplyKeyboardMarkup()
 # Машина состояний для поиска файлов
 class GetFile(StatesGroup):
     name = State()
@@ -113,27 +113,33 @@ async def faq_start(message: Message, state: FSMContext):
 
 @router_user_FSM.message(FAQ.department, F.text)
 async def faq_search_department(message: Message, state: FSMContext, session: AsyncSession):
-    await message.answer("Выбери категорию")
+    await message.answer("Выбери категорию", reply_markup=del_kb)
     department=message.text
     faq_category = await orm_get_category_by_department(department=department, session=session)
     for faq in faq_category:
         await message.answer(
             text=f"❓ {faq.category}",
             reply_markup=get_callback_btns(
-                btns={"Категории": f"answer_{faq.id}"}  # Лучше передавать ID, не сам ответ
+                btns={"Вопросы по категории": f"faq_{faq.category}"}  # Лучше передавать ID, не сам ответ
             ),
         )
     await state.set_state(FAQ.category)
 
 
-@router_user_FSM.message(FAQ.category, F.text)
-async def show_faq(message: Message, session: AsyncSession):
-    category=message.text
+@router_user_FSM.callback_query(F.data.startswith("faq"))
+async def show_faq(callback: CallbackQuery, session: AsyncSession):
+    category = callback.data.split("_")[-1]
     faq_list = await orm_get_question_by_category(category=category, session=session)
     for faq in faq_list:
-        await message.answer(
+        await callback.message.answer(
             text=f"❓ {faq.question}",
             reply_markup=get_callback_btns(
                 btns={"Ответ": f"answer_{faq.id}"}  # Лучше передавать ID, не сам ответ
             ),
         )
+    user_id = callback.from_user.id
+    if user_id in user_answers:
+        try:
+            await callback.message.bot.delete_message(chat_id=callback.message.chat.id, message_id=user_answers[user_id])
+        except Exception as e:
+            print(f"Ошибка при удалении предыдущего сообщения: {e}")
