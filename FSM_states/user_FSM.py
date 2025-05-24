@@ -6,8 +6,9 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm_query import orm_get_file_by_name, orm_get_folder_by_name
-from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_get_question
+from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_get_category_by_department, orm_get_question, orm_get_question_by_category
 from keyboards.inline import get_callback_btns
+from keyboards.users_kb import department_kb
 
 
 router_user_FSM = Router()
@@ -104,22 +105,35 @@ class FAQ(StatesGroup):
     name = State()
 
 
-
 @router_user_FSM.message(F.text == "Часто задаваемые вопросы")
-async def faq_start(message: Message, state: FSMContext, session: AsyncSession):
-    await message.answer("Выбери отдел")
+async def faq_start(message: Message, state: FSMContext):
+    await message.answer("Выбери отдел", reply_markup=department_kb)
     await state.set_state(FAQ.department)
 
 
-@router_user_FSM.message(F.text == "Часто задаваемые вопросы")
+@router_user_FSM.message(FAQ.department, F.text)
+async def faq_search_department(message: Message, state: FSMContext, session: AsyncSession):
+    await message.answer("Выбери категорию")
+    department=message.text
+    faq_category = await orm_get_category_by_department(department=department, session=session)
+    for faq in faq_category:
+        await message.answer(
+            text=f"❓ {faq.category}",
+            reply_markup=get_callback_btns(
+                btns={"Категории": f"answer_{faq.id}"}  # Лучше передавать ID, не сам ответ
+            ),
+        )
+    await state.set_state(FAQ.category)
+
+
+@router_user_FSM.message(FAQ.category, F.text)
 async def show_faq(message: Message, session: AsyncSession):
-    faq_list = await orm_get_question(session=session)
+    category=message.text
+    faq_list = await orm_get_question_by_category(category=category, session=session)
     for faq in faq_list:
         await message.answer(
             text=f"❓ {faq.question}",
             reply_markup=get_callback_btns(
-                btns={
-                    "Ответ": f"answer_{faq.id}"  # Лучше передавать ID, не сам ответ
-                }
+                btns={"Ответ": f"answer_{faq.id}"}  # Лучше передавать ID, не сам ответ
             ),
         )

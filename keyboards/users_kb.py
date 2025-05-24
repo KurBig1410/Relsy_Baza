@@ -12,5 +12,12 @@ start_kb = ReplyKeyboardMarkup(
     resize_keyboard=True,
     input_field_placeholder="Что вас интересует?",
 )
-
+department_kb = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Развитие"),
+            KeyboardButton(text="Запуск"),
+        ]
+    ],
+)
 del_kb = ReplyKeyboardRemove()
