@@ -1,19 +1,18 @@
 from aiogram.fsm.state import StatesGroup, State
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery, ReplyKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm_query import orm_get_file_by_name, orm_get_folder_by_name
 from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_get_category_by_department, orm_get_question, orm_get_question_by_category
 from keyboards.inline import get_callback_btns
-from keyboards.users_kb import department_kb
+from keyboards.users_kb import department_kb, del_kb
 
 
 router_user_FSM = Router()
 user_answers = {}  # user_id: message_id
-del_kb = ReplyKeyboardMarkup()
 # Машина состояний для поиска файлов
 class GetFile(StatesGroup):
     name = State()
