@@ -174,7 +174,7 @@ async def add_departament(message: Message, state: FSMContext):
 
 @router_admin_FSM.message(AddQuestion.department, F.text)
 async def add_category(message: Message, state: FSMContext):
-    await state.update_data(departament=message.text)
+    await state.update_data(department=message.text)
     await message.answer("Введи категорию", reply_markup=admin_kb_cansel)
     await state.set_state(AddQuestion.category)
 

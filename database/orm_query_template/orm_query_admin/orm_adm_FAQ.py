@@ -10,7 +10,7 @@ async def orm_add_question(session: AsyncSession, data: dict):
         question=data["question"],
         answer=data["answer"],
         category=data["category"],
-        departament=data["category"],
+        department=data["department"],
     )
     session.add(obj)
     await session.commit()
