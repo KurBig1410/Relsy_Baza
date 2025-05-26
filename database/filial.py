@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-
+from datetime import datetime, timedelta
 
 class Base(SQLModel):
     pass
@@ -8,6 +8,8 @@ class Base(SQLModel):
 
 class Filial(Base, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    report_date: datetime
+
     name: str
     income: Optional[float] = None
     service_sum: Optional[float] = None
