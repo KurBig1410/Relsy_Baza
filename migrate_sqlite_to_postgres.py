@@ -15,7 +15,7 @@ logging.basicConfig(
 
 # Подключение к SQLite
 sqlite_engine = create_engine("sqlite:///data/filial_stats.db")
-db_url = os.getenv("DB_URL")
+db_url = os.getenv("DB_URL_NO_ASYNC")
 # Подключение к PostgreSQL
 postgres_engine = create_engine(db_url)
 
@@ -34,7 +34,7 @@ def migrate_sqlite_to_postgres():
     with Session(postgres_engine) as session:
         for record in sqlite_filials:
             try:
-                new_record = Filial(**record.dict())
+                new_record = Filial(**record.model_dump())
                 session.add(new_record)
                 count += 1
                 logging.info(
@@ -48,4 +48,4 @@ def migrate_sqlite_to_postgres():
         logging.info(f"✅ Успешно добавлено {count} записей в PostgreSQL")
     logging.info("🏁 Миграция завершена")
 
-    
+migrate_sqlite_to_postgres()

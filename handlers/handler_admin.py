@@ -89,7 +89,7 @@ async def get_admins(message: Message, session: AsyncSession):
 @router_admin_handler.message(F.text == "Обновить статистику")
 async def run_yc_data(message: Message, session: AsyncSession):
     try:
-        command = ["xvfb-run", "-a", "python3", "run.py"]
+        command = ["xvfb-run", "-a", "python3", "run.py --p"]
         process = await asyncio.create_subprocess_exec(
             *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
@@ -116,7 +116,35 @@ async def run_yc_data(message: Message, session: AsyncSession):
         await message.answer(f"💥 Критическая ошибка:\n{e}")
         print(f"[exception]: {e}")
 
+@router_admin_handler.message(F.text == "Авторизоваться")
+async def run_yc_data_auth(message: Message, session: AsyncSession):
+    try:
+        command = ["xvfb-run", "-a", "python3", "run.py --a"]
+        process = await asyncio.create_subprocess_exec(
+            *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await process.communicate()
 
+        stdout_decoded = stdout.decode().strip()
+        stderr_decoded = stderr.decode().strip()
+
+        if process.returncode == 0:
+            await message.answer(f'✅ Успешно:\n{stdout_decoded or "(нет вывода)"}')
+        else:
+            await message.answer(
+                f"❌ Ошибка выполнения run.py:\n{stderr_decoded or stdout_decoded}"
+            )
+            print(f"[stderr]:\n{stderr_decoded}")
+            print(f"[stdout]:\n{stdout_decoded}")
+
+    except Exception as e:
+        await message.answer(f"💥 Критическая ошибка:\n{e}")
+        print(f"[exception]: {e}")
+    try:
+        await run_pipeline()
+    except Exception as e:
+        await message.answer(f"💥 Критическая ошибка:\n{e}")
+        print(f"[exception]: {e}")
 
 
 
