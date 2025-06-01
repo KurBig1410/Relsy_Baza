@@ -119,7 +119,7 @@ async def run_yc_data(message: Message, session: AsyncSession):
 @router_admin_handler.message(F.text == "Авторизоваться")
 async def run_yc_data_auth(message: Message, session: AsyncSession):
     try:
-        command = ["xvfb-run", "-a", "python3", "run.py --a"]
+        command = ["xvfb-run", "-a", "python3", "run.py", "--a"]
         process = await asyncio.create_subprocess_exec(
             *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
