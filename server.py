@@ -19,7 +19,7 @@ from database.crud.filial_crud import (
     get_filials_in_range,
 )
 
-from migrate_sqlite_to_postgres import migrate_sqlite_to_postgres
+# from migrate_sqlite_to_postgres import migrate_sqlite_to_postgres
 
 app = FastAPI()
 
@@ -45,10 +45,10 @@ async def ping():
     return {"status": "ok"}
 
 
-@app.get("/api/migrate")
-async def migrate():
-    migrate_sqlite_to_postgres()
-    return {"status": "ok"}
+# @app.get("/api/migrate")
+# async def migrate():
+#     migrate_sqlite_to_postgres()
+#     return {"status": "ok"}
 
 
 @app.get("/api/del_filials")
