@@ -3,6 +3,7 @@ from middlewares.db import DataBaseSession
 from database.engine import create_db, drop_db, session_maker
 from handlers.handler_user import router_user_handler
 from handlers.handler_admin import router_admin_handler
+from middlewares.parse_mw import YclientsMiddleware
 
 from setings import dp, bot
 
@@ -27,6 +28,7 @@ async def main():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
     dp.update.middleware(DataBaseSession(session_pool=session_maker))
+    dp.message.middleware(YclientsMiddleware())
     await create_db()
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
