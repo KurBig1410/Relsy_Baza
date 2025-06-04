@@ -38,6 +38,7 @@ async def start_bot():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
     dp.update.middleware(DataBaseSession(session_pool=session_maker))
+    dp.message.middleware(YclientsMiddleware())
     await create_db()
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
