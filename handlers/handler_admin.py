@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from data.yc_service import fetch_and_store_yclients_data
 from database.orm_query_template.orm_query_admin.orm_adm_FAQ import orm_delete_faqs
 from run_pipeline import run_pipeline
 from yandex_disk import scan_and_notify
@@ -82,6 +83,15 @@ async def get_admins(message: Message, session: AsyncSession):
         )
 
 
+@router_admin_handler.message(F.text == "Обновить данные")
+async def fetch_data(message: Message, session: AsyncSession):
+    try:
+        await message.answer("Выполняю!")
+        await fetch_and_store_yclients_data()
+        await message.answer("Выполнено!")
+    except Exception as e:
+        await message.answer(f'Ошибка: {e}')
+    
 
 
 
